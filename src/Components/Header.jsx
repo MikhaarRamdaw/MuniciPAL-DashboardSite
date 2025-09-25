@@ -1,7 +1,7 @@
 function Header() {
   return (
     <div className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-bold">Music-PAL</h1>
+      <h1 className="text-2xl font-bold">MuniciPAL</h1>
 
       <div className="flex items-center space-x-4">
         <input
