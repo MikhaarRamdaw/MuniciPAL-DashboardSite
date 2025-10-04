@@ -1,54 +1,64 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+
+// Uses SVGR (?react) so the SVG renders as a React component
 import MunicipalIcon from "../assets/municiPAL.svg?react";
 
-function Sidebar() {
-  const [collapsed, setCollapsed] = useState(true);
+
+const NAV = [
+  { to: "/",        label: "Dashboard", icon: "🏠" },
+  { to: "/tickets", label: "Tickets",   icon: "🎟️" },
+  { to: "/reports", label: "Reports",   icon: "📊" }, 
+  { to: "/settings",label: "Settings",  icon: "⚙️" },
+];
+
+export default function Sidebar() {
+  const { pathname } = useLocation();
+  const [collapsed, setCollapsed] = useState(false);
+
+  const isActive = (to) => pathname === to;
 
   return (
     <aside
-      className={`bg-gray-900 text-white h-screen p-4 pt-3 transition-all duration-300
-      ${collapsed ? "w-16" : "w-64"} flex flex-col items-center`}
+      className={`bg-slate-900 text-slate-100 h-screen pt-3 transition-all duration-300
+      ${collapsed ? "w-16" : "w-64"} flex flex-col`}
     >
+      {/* Brand + collapse toggle */}
       <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="mb-6 mt-2"
+        onClick={() => setCollapsed((v) => !v)}
+        className="mx-3 mb-6 mt-2 flex items-center gap-3"
+        aria-label={collapsed ? "Expand menu" : "Collapse menu"}
+        title={collapsed ? "Expand" : "Collapse"}
       >
         <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white">
-          <MunicipalIcon className="w-8 h-8 text-blue-400" />
+          <MunicipalIcon className="w-7 h-7 text-blue-500" />
+          {/* Fallback if not using SVGR:
+          <img src={municipalLogo} alt="MuniciPAL" className="w-7 h-7" /> */}
         </div>
+        {!collapsed && <span className="font-semibold text-base">MuniciPAL</span>}
       </button>
 
-      <ul className="space-y-3 w-full">
-        {[
-          { to: "/", icon: "🏠", label: "Dashboard" },
-          { to: "/tickets", icon: "🎟️", label: "Tickets" },
-          { to: "/activity", icon: "📜", label: "Activity Log" },
-          { to: "/settings", icon: "⚙️", label: "Settings" },
-        ].map((item) => (
-          <li key={item.to}>
-            <Link
-              to={item.to}
-              className="flex items-center hover:text-blue-400 transition-all duration-300"
+      {/* Nav items */}
+      <nav className="px-2 space-y-1">
+        {NAV.map((item) => (
+          <Link
+            key={item.to}
+            to={item.to}
+            className={`group flex items-center rounded-md px-3 py-2 transition-colors
+              ${isActive(item.to) ? "bg-slate-700 text-white" : "text-slate-200 hover:bg-slate-800"}`}
+          >
+            <span className="w-6 text-lg text-center">{item.icon}</span>
+            <span
+              className={`whitespace-nowrap overflow-hidden transition-all duration-300
+                ${collapsed ? "opacity-0 w-0 ml-0" : "opacity-100 w-auto ml-2"}`}
             >
-              <span
-                className={`w-6 text-lg transition-all duration-300
-                ${collapsed ? "mx-auto" : "ml-0"}`}
-              >
-                {item.icon}
-              </span>
-              <span
-                className={`transition-all duration-300 overflow-hidden whitespace-nowrap 
-                ${collapsed ? "opacity-0 w-0" : "opacity-100 w-auto ml-2"}`}
-              >
-                {item.label}
-              </span>
-            </Link>
-          </li>
+              {item.label}
+            </span>
+          </Link>
         ))}
-      </ul>
+      </nav>
+
+      <div className="flex-1" />
     </aside>
   );
 }
-
-export default Sidebar;

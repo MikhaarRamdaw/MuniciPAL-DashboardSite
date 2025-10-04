@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
-import TicketCard from "../components/TicketCard";
+import TicketCard from "../Components/TicketCard";
 
 //time submitted
 function Tickets() {

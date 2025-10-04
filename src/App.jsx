@@ -1,17 +1,15 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Tickets from "./pages/Tickets";
+import Reports from "./pages/Reports"; // NEW
 
-function App() {
+export default function App() {
   return (
     <Routes>
-      {/* Landing page = Dashboard */}
       <Route path="/" element={<Dashboard />} />
-
-      {/* Tickets page */}
       <Route path="/tickets" element={<Tickets />} />
+      <Route path="/reports" element={<Reports />} /> {/* NEW */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
-
-export default App;
