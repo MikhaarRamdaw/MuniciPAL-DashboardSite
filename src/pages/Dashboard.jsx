@@ -1,14 +1,13 @@
 import { useMemo, useState, useEffect } from "react";
 import Sidebar from "../Components/Sidebar";
 import Topbar from "../Components/Topbar";
-import TicketCard from "../Components/TicketCard";
 import ContactsModal from "../Components/ContactsModal";
 import LeaveCalendarModal from "../Components/LeaveCalendarModal";
+import { Ticket } from "lucide-react";
 
 const STATUSES = ["Pending", "In Progress", "Closed"];
 
 export default function Dashboard() {
-  // ✅ Example ticket state (in real app this will come from your backend or API)
   const [tickets, setTickets] = useState([
     { id: 1, title: "Fix login bug", status: "Pending" },
     { id: 2, title: "Update docs", status: "In Progress" },
@@ -25,6 +24,14 @@ export default function Dashboard() {
     setOpenCount(count);
   }, [tickets]);
 
+  // ✅ Update ticket status directly from dropdown
+  const handleStatusChange = (id, newStatus) => {
+    const updated = tickets.map((ticket) =>
+      ticket.id === id ? { ...ticket, status: newStatus } : ticket
+    );
+    setTickets(updated);
+  };
+
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -37,12 +44,12 @@ export default function Dashboard() {
           onOpenCalendar={() => setShowCalendar(true)}
         />
 
-        {/* ✅ Open Tickets summary box ABOVE board */}
+        {/* ✅ Styled Open Tickets Box */}
         <div className="flex justify-end mt-4 mr-6">
-          <div className="bg-blue-800 text-white rounded-md shadow-md px-4 py-2 w-48 text-center">
-            <h2 className="font-semibold text-sm">Open Tickets</h2>
-            <p className="text-xl font-bold mt-1">{openCount}</p>
-          </div>
+          <button className="flex items-center bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition shadow">
+            <Ticket className="w-5 h-5 mr-2" />
+            <span className="font-semibold">Open Tickets: {openCount}</span>
+          </button>
         </div>
 
         {/* Tickets Board */}
@@ -55,7 +62,40 @@ export default function Dashboard() {
                 {tickets
                   .filter((t) => t.status === status)
                   .map((ticket) => (
-                    <TicketCard key={ticket.id} ticket={ticket} />
+                    <div
+                      key={ticket.id}
+                      className={`p-3 rounded border mb-2 ${
+                        ticket.status === "Pending"
+                          ? "bg-red-100"
+                          : ticket.status === "In Progress"
+                          ? "bg-green-100"
+                          : "bg-gray-100"
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h3 className="font-semibold">{ticket.title}</h3>
+                          <p className="text-xs text-gray-500">
+                            Ticket ID: {ticket.id}
+                          </p>
+                        </div>
+
+                        {/* ✅ Status dropdown per ticket */}
+                        <select
+                          value={ticket.status}
+                          onChange={(e) =>
+                            handleStatusChange(ticket.id, e.target.value)
+                          }
+                          className="border border-gray-300 rounded px-2 py-1 text-sm bg-white cursor-pointer"
+                        >
+                          {STATUSES.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   ))}
 
                 {/* Optional message if empty */}
@@ -70,8 +110,12 @@ export default function Dashboard() {
         </main>
 
         {/* Modals */}
-        {showContacts && <ContactsModal onClose={() => setShowContacts(false)} />}
-        {showCalendar && <LeaveCalendarModal onClose={() => setShowCalendar(false)} />}
+        {showContacts && (
+          <ContactsModal onClose={() => setShowContacts(false)} />
+        )}
+        {showCalendar && (
+          <LeaveCalendarModal onClose={() => setShowCalendar(false)} />
+        )}
       </div>
     </div>
   );
